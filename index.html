@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layered Dreams | 3D Printing Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary-pink: #ff00cc;
+            --secondary-purple: #9b59b6;
+            --glass-bg: rgba(0, 0, 0, 0.35); 
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-white: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.8);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #2e0228;
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- ANIMATED BACKGROUND --- */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #4a00e0, #8e2de2, #ff00cc, #ff9a9e, #e0c3fc, #240b36);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- UTILITIES --- */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 25px; }
+        h1, h2, h3 { font-weight: 800; letter-spacing: -1px; }
+
+        /* --- HEADER --- */
+        header { padding: 4rem 0 2rem; text-align: center; }
+
+        h1.main-title {
+            font-size: 4.5rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, #ffccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 0, 204, 0.4);
+        }
+
+        /* --- UPDATED SLIDER STYLES --- */
+        .slider-container {
+            overflow: hidden;
+            padding: 3rem 0; /* More spacing */
+            white-space: nowrap;
+            position: relative;
+            /* No glass background on container itself to let images pop */
+        }
+
+        .slider-track {
+            display: inline-block;
+            /* Slower animation for better readability of deals */
+            animation: scroll 40s linear infinite; 
+        }
+
+        /* The Slide Item Wrapper */
+        .slide-item {
+            display: inline-block;
+            height: 450px; /* INCREASED HEIGHT */
+            width: 350px;  /* Fixed width for consistent cards */
+            margin: 0 20px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: transform 0.3s ease;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .slide-item:hover {
+            transform: scale(1.05);
+            z-index: 2;
+            border-color: var(--primary-pink);
+        }
+
+        .slide-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Text Overlay inside the slide */
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: white;
+            white-space: normal; /* Allow text to wrap */
+        }
+
+        .slide-overlay h4 {
+            font-size: 1.5rem;
+            color: #ffccff;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            /* Move -50% because we have 2 sets of images (original + duplicate) */
+            100% { transform: translateX(-50%); } 
+        }
+
+        /* --- CATALOGUE GRID --- */
+        .section-title {
+            font-size: 2.5rem;
+            margin: 5rem 0 3rem;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50%;
+            height: 5px;
+            background: linear-gradient(90deg, #fff, var(--primary-pink));
+            border-radius: 2px;
+        }
+
+        .catalogue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .product-card {
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .product-card:hover {
+            transform: translateY(-15px) scale(1.03) rotate(1deg);
+            box-shadow: 0 20px 40px rgba(255, 0, 204, 0.3);
+            border-color: var(--primary-pink);
+            background: rgba(0, 0, 0, 0.5); 
+        }
+
+        .card-img-wrapper { height: 220px; overflow: hidden; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .product-card:hover .card-img { transform: scale(1.1); }
+        .card-info { padding: 1.5rem; position: relative; }
+        .card-info h3 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .card-info p { color: #ff99cc; font-weight: 700; text-shadow: 0 0 10px rgba(255, 0, 204, 0.3); }
+
+        /* --- SERVICES LIST --- */
+        .services-container { display: flex; flex-direction: column; gap: 2rem; }
+        
+        .service-item {
+            display: flex;
+            align-items: center;
+            padding: 2.5rem;
+            border-radius: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .service-item:hover {
+             transform: translateX(10px);
+             border-color: rgba(255,255,255,0.6);
+             background: rgba(0,0,0,0.5);
+        }
+
+        .service-img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-right: 2.5rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            flex-shrink: 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .service-content h3 { font-size: 1.8rem; margin-bottom: 1rem; color: #fff; }
+        .service-content p { color: var(--text-muted); font-size: 1.1rem; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 6rem;
+            padding: 4rem 0;
+            text-align: center;
+            border-radius: 40px 40px 0 0;
+            border-bottom: none;
+        }
+
+        .social-links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 2rem; }
+        
+        .social-btn {
+            text-decoration: none;
+            color: var(--text-white);
+            font-size: 1.2rem;
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 30px; border-radius: 50px;
+            font-weight: 700; background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border); backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover { transform: translateY(-3px); }
+        .social-btn.whatsapp:hover { background: #25d366; border-color: #25d366; box-shadow: 0 0 20px #25d36680; }
+        .social-btn.instagram:hover { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); border-color: transparent; box-shadow: 0 0 20px #c1358480;}
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            h1.main-title { font-size: 3rem; }
+            .slide-item { height: 350px; width: 280px; } /* Smaller on mobile */
+            .service-item { flex-direction: column; text-align: center; }
+            .service-img { margin: 0 auto 1.5rem; width: 100%; max-width: 300px; height: 250px; }
+            .social-links { flex-direction: column; align-items: center; }
+            .social-btn { width: 80%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="animated-bg"></div>
+
+    <header>
+        <div class="container" data-aos="fade-down" data-aos-duration="1000">
+            <h1 class="main-title">Layered Dreams</h1>
+            <p style="font-size: 1.2rem; color: var(--text-muted); letter-spacing: 2px;">Manifesting reality, layer by layer.</p>
+        </div>
+
+        <div class="slider-container" style="margin-top: 1rem;">
+            <div class="slider-track">
+                
+                <div class="slide-item">
+                    <img src="https://images.unsplash.com/photo-1615879571290-8661edfd87eb?q=80&w=600&auto=format&fit=crop" class="slide-img" alt="Deal">
+                    <div class="slide-overlay">
+                        <h4>Launch Deal</h4>
+                        <p>Get 20% OFF all custom prints this week!</p>
+                    </div>
+                </div>
+
+                <div class="slide-item">
+                    <img src="https://images.unsplash.com/photo-1633324304911-4029fd1d0516?q=80&w=600&auto=format&fit=crop" class="slide-img" alt="Recent Work">
+                    <div class="slide-overlay">
+                        <h4>Recent Work</h4>
+                        <p>Giant Articulated Dragon commissioned by @ClientName</p>
+                    </div>
+                </div>
+
+                <div class="slide-item">
+                    <img src="https://images.unsplash.com/photo-1517420879524-86d64ac2f339?q=80&w=600&auto=format&fit=crop" class="slide-img" alt="Product">
+                    <div class="slide-overlay">
+                        <h4>New Material</h4>
+                        <p>Now printing in Glow-in-the-Dark Blue!</p>
+                    </div>
+                </div>
+
+                <div class="slide-item">
+                    <img src="https://images.unsplash.com/photo-1627850604058-52e40de1b847?q=80&w=600&auto=format&fit=crop" class="slide-img" alt="Service">
+                    <div class="slide-overlay">
+                        <h4>Custom Funkos</h4>
+                        <p>Turn your friends into toys. Open for commissions.</p>
+                    </div>
+                </div>
+
+
+                <div class="slide-item">
+                    <img src="https://images.unsplash.com/photo-1615879571290-8661edfd87eb?q=80&w=600&auto=format&fit=crop" class="slide-img">
+                    <div class="slide-overlay">
+                        <h4>Launch Deal</h4>
+                        <p>Get 20% OFF all custom prints this week!</p>
+                    </div>
+                </div>
+
+                <div class="slide-item">
+                    <img src="https://images.unsplash.com/photo-1633324304911-4029fd1d0516?q=80&w=600&auto=format&fit=crop" class="slide-img">
+                    <div class="slide-overlay">
+                        <h4>Recent Work</h4>
+                        <p>Giant Articulated Dragon commissioned by @ClientName</p>
+                    </div>
+                </div>
+
+                <div class="slide-item">
+                    <img src="https://images.unsplash.com/photo-1517420879524-86d64ac2f339?q=80&w=600&auto=format&fit=crop" class="slide-img">
+                    <div class="slide-overlay">
+                        <h4>New Material</h4>
+                        <p>Now printing in Glow-in-the-Dark Blue!</p>
+                    </div>
+                </div>
+
+                <div class="slide-item">
+                    <img src="https://images.unsplash.com/photo-1627850604058-52e40de1b847?q=80&w=600&auto=format&fit=crop" class="slide-img">
+                    <div class="slide-overlay">
+                        <h4>Custom Funkos</h4>
+                        <p>Turn your friends into toys. Open for commissions.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-right">The Stash</h2>
+        
+        <div class="catalogue-grid">
+            <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="100">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1631541909061-71e349d1f203?q=80&w=500&auto=format&fit=crop" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h3>Crystal Dragon</h3>
+                    <p>€45.00</p>
+                </div>
+            </div>
+
+            <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="200">
+                 <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1526491709905-0004730724ba?q=80&w=500&auto=format&fit=crop" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h3>Voronoi Skull</h3>
+                    <p>€30.00</p>
+                </div>
+            </div>
+
+            <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="300">
+                 <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1589254065878-42c9da6e2008?q=80&w=500&auto=format&fit=crop" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h3>Cyberpunk Planter</h3>
+                    <p>€25.00</p>
+                </div>
+            </div>
+
+            <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="400">
+                 <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1616398752979-05692c77a89e?q=80&w=500&auto=format&fit=crop" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h3>Abstract Vases</h3>
+                    <p>From €20.00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-right" style="margin-top: 8rem;">What We Do</h2>
+        
+        <div class="services-container">
+            
+            <div class="service-item glass" data-aos="fade-left" data-aos-delay="100">
+                <img src="https://images.unsplash.com/photo-1627850604058-52e40de1b847?q=80&w=600&auto=format&fit=crop" alt="Custom Figurine" class="service-img">
+                <div class="service-content">
+                    <h3>Personalized Funko-Style Figs</h3>
+                    <p>Forget boring gifts. We turn your favorite humans into custom "Funko-style" vinyl figures. Send us photos, and we'll sculpt a ridiculously cute, big-headed caricature that captures their vibe perfectly.</p>
+                </div>
+            </div>
+
+            <div class="service-item glass" data-aos="fade-left" data-aos-delay="200">
+                <img src="https://images.unsplash.com/photo-1507608869274-2c33ee13db69?q=80&w=600&auto=format&fit=crop" alt="Lithophane" class="service-img">
+                <div class="service-content">
+                    <h3>Lithophane Creation</h3>
+                    <p>Magic happens when the lights go down. We take your digital photos and 3D print them into textured porcelain-like panes. They look like nothing special until you put a light behind them—bam!</p>
+                </div>
+            </div>
+
+            <div class="service-item glass" data-aos="fade-left" data-aos-delay="300">
+                <img src="https://images.unsplash.com/photo-1565043666747-69f6646db940?q=80&w=600&auto=format&fit=crop" alt="3D Printing" class="service-img">
+                <div class="service-content">
+                    <h3>Custom 3D Model Printing</h3>
+                    <p>Got an STL file burning a hole in your hard drive? We'll bring it into the real world. Whether it's a cosplay prop, a prototype for your startup, or just a cool meme you found online, we print it with precision.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="glass">
+        <div class="container" data-aos="zoom-in">
+            <h2 style="font-size: 2rem;">Slide Into Our DMs</h2>
+            <p style="color: var(--text-muted);">Ready to start your project?</p>
+            
+            <div class="social-links">
+                <a href="https://wa.me/YOUR_NUMBER_HERE" target="_blank" class="social-btn whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://instagram.com/YOUR_USERNAME_HERE" target="_blank" class="social-btn instagram">
+                    <i class="fab fa-instagram"></i> Instagram
+                </a>
+            </div>
+            <br><br>
+            <p style="color: var(--text-muted); font-size: 0.8rem; letter-spacing: 1px;">© 2025 LAYERED DREAMS. EST. THE FUTURE.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true, offset: 100 });
+    </script>
+</body>
+</html>
