@@ -61,7 +61,7 @@
         h1, h2, h3 { font-weight: 800; letter-spacing: -1px; }
 
         /* --- HEADER --- */
-        header { padding: 4rem 0 2rem; text-align: center; }
+        header { padding: 4rem 0 2rem; text-align: center; position: relative; height: 100vh;}
 
         h1.main-title {
             font-size: 4.5rem;
@@ -83,14 +83,16 @@
         }
 
         .slider-track {
-            display: inline-block;
+            display: flex;
+            align-items: stretch;
             /* Slower animation for better readability of deals */
-            animation: scroll 40s linear infinite; 
+            animation: scroll 15s linear infinite;
         }
 
         /* The Slide Item Wrapper */
         .slide-item {
             display: inline-block;
+            flex: 0 0 auto;
             height: 450px; /* INCREASED HEIGHT */
             width: 350px;  /* Fixed width for consistent cards */
             margin: 0 20px;
@@ -131,6 +133,71 @@
             color: #ffccff;
             margin-bottom: 5px;
             text-transform: uppercase;
+        }
+
+        /* --- SCROLL INDICATOR --- */
+
+        /* scroll label above the icon */
+        .scroll-label {
+            position: fixed;
+            margin-bottom: 7px;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 44px; /* reduced gap to indicator */
+            font-size: 0.9rem; /* larger label */
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            z-index: 9999;
+            pointer-events: none;
+            transition: opacity 260ms ease, transform 260ms ease;
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 18px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            text-decoration: none;
+            font-size: 1.2rem;
+            z-index: 9999;
+            transition: transform 0.25s ease, opacity 260ms ease, visibility 260ms ease;
+            pointer-events: auto;
+        }
+
+        /* hidden state when user scrolls past the top section */
+        .scroll-indicator.hidden,
+        .scroll-label.hidden {
+            opacity: 0;
+            transform: translateX(-50%) translateY(8px);
+            pointer-events: none;
+            visibility: hidden;
+        }
+
+        .scroll-indicator:hover { transform: translateX(-50%) translateY(-6px); }
+
+        .scroll-indicator .icon {
+            display: inline-block;
+            font-size: 1.4rem;
+            line-height: 1;
+            animation: scroll-bounce 1.6s infinite;
+            color: var(--text-white);
+            opacity: 0.95;
+        }
+
+        @keyframes scroll-bounce {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(6px); }
+            100% { transform: translateY(0); }
         }
 
         @keyframes scroll {
@@ -266,66 +333,43 @@
 
         <div class="slider-container" style="margin-top: 1rem;">
             <div class="slider-track">
-                
                 <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1615879571290-8661edfd87eb?q=80&w=600&auto=format&fit=crop" class="slide-img" alt="Deal">
+                    <img src="./planter.heic" class="slide-img" alt="Deal">
                     <div class="slide-overlay">
                         <h4>Launch Deal</h4>
                         <p>Get 20% OFF all custom prints this week!</p>
                     </div>
                 </div>
-
                 <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1633324304911-4029fd1d0516?q=80&w=600&auto=format&fit=crop" class="slide-img" alt="Recent Work">
+                    <img src="./devilFruit.heic" class="slide-img" alt="Recent Work">
                     <div class="slide-overlay">
                         <h4>Recent Work</h4>
-                        <p>Giant Articulated Dragon commissioned by @ClientName</p>
+                        <p>Poke Poke Fruit</p>
                     </div>
                 </div>
-
                 <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1517420879524-86d64ac2f339?q=80&w=600&auto=format&fit=crop" class="slide-img" alt="Product">
+                    <img src="./sunearring.heic" class="slide-img" alt="Product">
                     <div class="slide-overlay">
-                        <h4>New Material</h4>
-                        <p>Now printing in Glow-in-the-Dark Blue!</p>
+                        <h4>Lithophane</h4>
+                        <p>Gived your loved one's their best moments carved forever.</p>
                     </div>
                 </div>
-
                 <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1627850604058-52e40de1b847?q=80&w=600&auto=format&fit=crop" class="slide-img" alt="Service">
+                    <img src="./funko-min.png" class="slide-img" alt="Service">
                     <div class="slide-overlay">
                         <h4>Custom Funkos</h4>
                         <p>Turn your friends into toys. Open for commissions.</p>
                     </div>
                 </div>
-
-
                 <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1615879571290-8661edfd87eb?q=80&w=600&auto=format&fit=crop" class="slide-img">
+                    <img src="./signBoards.png" class="slide-img">
                     <div class="slide-overlay">
-                        <h4>Launch Deal</h4>
-                        <p>Get 20% OFF all custom prints this week!</p>
+                        <h4>Custom Sign Boards</h4>
+                        <p>Custom 3D‑printed plastic sign boards — lightweight, durable PLA/PETG options, Ideal for indoor or sheltered outdoor use.</p>
                     </div>
                 </div>
-
                 <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1633324304911-4029fd1d0516?q=80&w=600&auto=format&fit=crop" class="slide-img">
-                    <div class="slide-overlay">
-                        <h4>Recent Work</h4>
-                        <p>Giant Articulated Dragon commissioned by @ClientName</p>
-                    </div>
-                </div>
-
-                <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1517420879524-86d64ac2f339?q=80&w=600&auto=format&fit=crop" class="slide-img">
-                    <div class="slide-overlay">
-                        <h4>New Material</h4>
-                        <p>Now printing in Glow-in-the-Dark Blue!</p>
-                    </div>
-                </div>
-
-                <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1627850604058-52e40de1b847?q=80&w=600&auto=format&fit=crop" class="slide-img">
+                    <img src="./funko2.png" class="slide-img">
                     <div class="slide-overlay">
                         <h4>Custom Funkos</h4>
                         <p>Turn your friends into toys. Open for commissions.</p>
@@ -334,15 +378,17 @@
 
             </div>
         </div>
+
+        <!-- Scroll label + indicator (moved to bottom of viewport) -->
     </header>
 
     <div class="container">
-        <h2 class="section-title" data-aos="fade-right">The Stash</h2>
+        <h2 class="section-title" data-aos="fade-right">Catalogue</h2>
         
         <div class="catalogue-grid">
             <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="100">
                 <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1631541909061-71e349d1f203?q=80&w=500&auto=format&fit=crop" class="card-img">
+                    <img src="./devilFruit.heic" class="card-img">
                 </div>
                 <div class="card-info">
                     <h3>Crystal Dragon</h3>
@@ -352,7 +398,7 @@
 
             <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="200">
                  <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1526491709905-0004730724ba?q=80&w=500&auto=format&fit=crop" class="card-img">
+                    <img src="./planter.heic" class="card-img">
                 </div>
                 <div class="card-info">
                     <h3>Voronoi Skull</h3>
@@ -362,7 +408,7 @@
 
             <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="300">
                  <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1589254065878-42c9da6e2008?q=80&w=500&auto=format&fit=crop" class="card-img">
+                    <img src="./sunearring.heic" class="card-img">
                 </div>
                 <div class="card-info">
                     <h3>Cyberpunk Planter</h3>
@@ -370,13 +416,33 @@
                 </div>
             </div>
 
-            <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="400">
-                 <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1616398752979-05692c77a89e?q=80&w=500&auto=format&fit=crop" class="card-img">
+            <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="100">
+                <div class="card-img-wrapper">
+                    <img src="./devilFruit.heic" class="card-img">
                 </div>
                 <div class="card-info">
-                    <h3>Abstract Vases</h3>
-                    <p>From €20.00</p>
+                    <h3>Crystal Dragon</h3>
+                    <p>€45.00</p>
+                </div>
+            </div>
+
+            <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="200">
+                 <div class="card-img-wrapper">
+                    <img src="./planter.heic" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h3>Voronoi Skull</h3>
+                    <p>€30.00</p>
+                </div>
+            </div>
+
+            <div class="product-card glass" data-aos="zoom-in-up" data-aos-delay="300">
+                 <div class="card-img-wrapper">
+                    <img src="./sunearring.heic" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h3>Cyberpunk Planter</h3>
+                    <p>€25.00</p>
                 </div>
             </div>
         </div>
@@ -388,7 +454,7 @@
         <div class="services-container">
             
             <div class="service-item glass" data-aos="fade-left" data-aos-delay="100">
-                <img src="https://images.unsplash.com/photo-1627850604058-52e40de1b847?q=80&w=600&auto=format&fit=crop" alt="Custom Figurine" class="service-img">
+                <img src="./funko2.png" alt="Custom Figurine" class="service-img">
                 <div class="service-content">
                     <h3>Personalized Funko-Style Figs</h3>
                     <p>Forget boring gifts. We turn your favorite humans into custom "Funko-style" vinyl figures. Send us photos, and we'll sculpt a ridiculously cute, big-headed caricature that captures their vibe perfectly.</p>
@@ -396,7 +462,7 @@
             </div>
 
             <div class="service-item glass" data-aos="fade-left" data-aos-delay="200">
-                <img src="https://images.unsplash.com/photo-1507608869274-2c33ee13db69?q=80&w=600&auto=format&fit=crop" alt="Lithophane" class="service-img">
+                <img src="./lithophane.png" alt="Lithophane" class="service-img">
                 <div class="service-content">
                     <h3>Lithophane Creation</h3>
                     <p>Magic happens when the lights go down. We take your digital photos and 3D print them into textured porcelain-like panes. They look like nothing special until you put a light behind them—bam!</p>
@@ -404,7 +470,7 @@
             </div>
 
             <div class="service-item glass" data-aos="fade-left" data-aos-delay="300">
-                <img src="https://images.unsplash.com/photo-1565043666747-69f6646db940?q=80&w=600&auto=format&fit=crop" alt="3D Printing" class="service-img">
+                <img src="./planter.heic" alt="3D Printing" class="service-img">
                 <div class="service-content">
                     <h3>Custom 3D Model Printing</h3>
                     <p>Got an STL file burning a hole in your hard drive? We'll bring it into the real world. Whether it's a cosplay prop, a prototype for your startup, or just a cool meme you found online, we print it with precision.</p>
@@ -420,10 +486,10 @@
             <p style="color: var(--text-muted);">Ready to start your project?</p>
             
             <div class="social-links">
-                <a href="https://wa.me/YOUR_NUMBER_HERE" target="_blank" class="social-btn whatsapp">
+                <a href="https://wa.me/9544743432" target="_blank" class="social-btn whatsapp">
                     <i class="fab fa-whatsapp"></i> WhatsApp
                 </a>
-                <a href="https://instagram.com/YOUR_USERNAME_HERE" target="_blank" class="social-btn instagram">
+                <a href="https://www.instagram.com/layered_dreams.0/" target="_blank" class="social-btn instagram">
                     <i class="fab fa-instagram"></i> Instagram
                 </a>
             </div>
@@ -432,9 +498,73 @@
         </div>
     </footer>
 
+    <!-- Scroll label + indicator (fixed at bottom of viewport) -->
+    <span class="scroll-label">Scroll</span>
+    <a href="#" class="scroll-indicator" onclick="window.scrollBy({top: window.innerHeight, behavior: 'smooth'});return false;" aria-label="Scroll down">
+        <!-- Inline triple-chevron SVG (uses currentColor) -->
+        <svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M6.343 8.343a1 1 0 0 1 1.414 0L12 12.586l4.243-4.243a1 1 0 0 1 1.414 1.414l-5 5a1 1 0 0 1-1.414 0l-5-5a1 1 0 0 1 0-1.414z" fill="currentColor"/>
+            <path d="M6.343 3.343a1 1 0 0 1 1.414 0L12 7.586l4.243-4.243a1 1 0 0 1 1.414 1.414l-5 5a1 1 0 0 1-1.414 0l-5-5a1 1 0 0 1 0-1.414z" fill="currentColor" opacity="0.9"/>
+            <path d="M6.343 13.343a1 1 0 0 1 1.414 0L12 17.586l4.243-4.243a1 1 0 0 1 1.414 1.414l-5 5a1 1 0 0 1-1.414 0l-5-5a1 1 0 0 1 0-1.414z" fill="currentColor" opacity="0.6"/>
+        </svg>
+    </a>
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({ duration: 800, once: true, offset: 100 });
+    </script>
+    <script>
+        // Make the slider truly continuous/seamless:
+        // Duplicate the track contents once so CSS translateX(-50%) loops without a jump.
+        (function(){
+            const track = document.querySelector('.slider-track');
+            const container = document.querySelector('.slider-container');
+            if (!track || !container) return;
+
+            // If content already duplicated, skip
+            if (track.dataset.duplicated === 'true') return;
+
+            // Duplicate slides (simple and robust): append a clone of all children
+            track.innerHTML = track.innerHTML + track.innerHTML;
+            track.dataset.duplicated = 'true';
+
+            // Optional: adjust animation duration based on content width for consistent speed
+            // const totalWidth = track.scrollWidth / 2; // width of one set
+            // const pxPerSecond = 100; // speed
+            // const duration = Math.max(20, Math.round(totalWidth / pxPerSecond));
+            // track.style.animationDuration = duration + 's';
+        })();
+    </script>
+    <script>
+        // Hide the scroll label + indicator once the header/top section is out of view
+        (function() {
+            const label = document.querySelector('.scroll-label');
+            const indicator = document.querySelector('.scroll-indicator');
+            const header = document.querySelector('header');
+            if (!header || !indicator) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        label && label.classList.remove('hidden');
+                        indicator.classList.remove('hidden');
+                    } else {
+                        label && label.classList.add('hidden');
+                        indicator.classList.add('hidden');
+                    }
+                });
+            }, { root: null, threshold: 0.12 });
+
+            // start observing the header element
+            observer.observe(header);
+
+            // also set initial state based on current position
+            const rect = header.getBoundingClientRect();
+            if (rect.bottom <= 0) {
+                label && label.classList.add('hidden');
+                indicator.classList.add('hidden');
+            }
+        })();
     </script>
 </body>
 </html>
