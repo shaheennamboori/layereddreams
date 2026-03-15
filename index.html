@@ -143,19 +143,22 @@
         .card-img.secondary {
             opacity: 0;
             transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .card-img.primary {
+            z-index: 1;
         }
 
         .product-card:hover .card-img.primary {
-            opacity: 0;
+            opacity: 1;
+            transform: scale(1.05); /* Subtle zoom for single images */
         }
 
         .product-card:hover .card-img.secondary {
             opacity: 1;
             transform: scale(1);
-        }
-
-        .product-card:hover .card-img {
-            opacity: 1;
+            z-index: 3;
         }
 
         .card-info {
