@@ -60,6 +60,41 @@
             justify-content: center;
             gap: 2rem;
             margin-bottom: 1rem;
+            position: relative;
+        }
+
+        /* --- LOGO EYES --- */
+        .logo-eyes {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .eye {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+            overflow: hidden;
+        }
+
+        .pupil {
+            width: 14px;
+            height: 14px;
+            background: #0f172a;
+            border-radius: 50%;
+            position: absolute;
+            transition: transform 0.1s ease-out;
         }
 
         .logo-circle {
@@ -298,6 +333,12 @@
 <body>
     <canvas id="bg-canvas"></canvas>
 
+    <!-- Interactive Eyes (Fixed at top-right) -->
+    <div class="logo-eyes">
+        <div class="eye"><div class="pupil"></div></div>
+        <div class="eye"><div class="pupil"></div></div>
+    </div>
+
     <header>
         <div class="container" data-aos="fade-up">
             <div class="header-flex">
@@ -494,6 +535,38 @@
             once: true, 
             offset: 50,
             easing: 'ease-out-quad'
+        });
+
+        // Interactive Eyes Logic
+        const pupils = document.querySelectorAll('.pupil');
+        
+        function updateEyes(x, y) {
+            pupils.forEach(pupil => {
+                const rect = pupil.parentElement.getBoundingClientRect();
+                const eyeX = rect.left + rect.width / 2;
+                const eyeY = rect.top + rect.height / 2;
+                const angle = Math.atan2(y - eyeY, x - eyeX);
+                const distance = Math.min(rect.width / 4, Math.hypot(x - eyeX, y - eyeY) / 10);
+                
+                const pupilX = Math.cos(angle) * distance;
+                const pupilY = Math.sin(angle) * distance;
+                
+                pupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+            });
+        }
+
+        window.addEventListener('mousemove', (e) => updateEyes(e.clientX, e.clientY));
+        
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) {
+                updateEyes(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                updateEyes(e.touches[0].clientX, e.touches[0].clientY);
+            }
         });
     </script>
 </body>
