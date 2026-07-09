@@ -5,28 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Layered Dreams | Professional 3D Printing Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
+
     <style>
-        /* --- CSS VARIABLES --- */
+        /* --- CSS VARIABLES: retro-arcade / voxel palette --- */
         :root {
-            --bg-dark: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.7); /* Added transparency */
-            --accent-blue: #38bdf8;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.1);
+            --bg-void: #0b0e1a;
+            --bg-card: #131a2b;
+            --pixel-cyan: #38bdf8;
+            --pixel-magenta: #ff3fa4;
+            --pixel-lime: #baff29;
+            --text-main: #f4f6fb;
+            --text-muted: #8a93b3;
+            --border-color: rgba(148, 163, 194, 0.25);
+            --pixel-shadow: #000000;
+            --px: 4px; /* base pixel unit used for step sizes */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
+            font-family: 'VT323', monospace;
+            font-size: 1.25rem;
+            background-color: var(--bg-void);
             color: var(--text-main);
             line-height: 1.5;
             overflow-x: hidden;
+        }
+
+        h1, h2, h3, .pixel-font {
+            font-family: 'Press Start 2P', 'VT323', monospace;
+            line-height: 1.6;
+        }
+
+        ::selection {
+            background: var(--pixel-magenta);
+            color: var(--bg-void);
+        }
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 2px dashed var(--pixel-lime);
+            outline-offset: 3px;
         }
 
         #bg-canvas {
@@ -35,23 +58,49 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: -2;
             pointer-events: none;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
         }
 
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 2rem; 
+        /* Subtle scanline overlay for CRT feel */
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.15) 0px,
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            opacity: 0.35;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
             position: relative;
             z-index: 1;
+        }
+
+        /* --- PIXEL BORDER + HARD SHADOW UTILITY --- */
+        .pixel-panel {
+            border: 3px solid var(--pixel-cyan);
+            border-radius: 0;
+            box-shadow: 6px 6px 0 var(--pixel-shadow);
         }
 
         /* --- HEADER --- */
         header {
             padding: 4rem 0 3rem;
-            border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(to bottom, rgba(30, 41, 59, 0.5), transparent);
+            border-bottom: 3px dashed var(--border-color);
+            background: linear-gradient(to bottom, rgba(19, 26, 43, 0.6), transparent);
         }
 
         .header-flex {
@@ -59,11 +108,11 @@
             align-items: center;
             justify-content: center;
             gap: 2rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             position: relative;
         }
 
-        /* --- LOGO EYES --- */
+        /* --- LOGO EYES (blocky pixel eyes) --- */
         .logo-eyes {
             position: fixed;
             top: 20px;
@@ -75,65 +124,95 @@
         }
 
         .eye {
-            width: 32px;
-            height: 32px;
-            background: white;
-            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            background: var(--text-main);
+            border-radius: 0;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid var(--accent-blue);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+            border: 3px solid var(--pixel-cyan);
+            box-shadow: 3px 3px 0 var(--pixel-shadow);
             overflow: hidden;
         }
 
         .pupil {
-            width: 14px;
-            height: 14px;
-            background: #0f172a;
-            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            background: var(--bg-void);
+            border-radius: 0;
             position: absolute;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.1s steps(4);
         }
 
         .logo-circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+            width: 96px;
+            height: 96px;
+            border-radius: 0;
             overflow: hidden;
-            border: 2px solid var(--accent-blue);
+            border: 3px solid var(--pixel-cyan);
             flex-shrink: 0;
             background: #fff;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+            box-shadow: 5px 5px 0 var(--pixel-shadow);
+            image-rendering: auto;
         }
 
         .logo-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scale(1.4); /* Zoomed in effect */
+            transform: scale(1.4);
         }
 
         .main-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: -0.025em;
+            font-size: 2.1rem;
+            letter-spacing: 0.02em;
             margin: 0;
-            color: white;
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-            animation: title-float 3s ease-in-out infinite;
+            color: var(--text-main);
+            text-shadow: 3px 3px 0 var(--pixel-magenta);
         }
 
-        @keyframes title-float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); text-shadow: 0 0 20px rgba(56, 189, 248, 0.8); }
+        /* Signature element: a print-progress bar of pixel blocks that fills
+           left-to-right, echoing "layer by layer" 3D printing + pixel grid */
+        .print-progress {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin: 1.5rem 0 1.75rem;
+        }
+
+        .print-progress span {
+            width: 14px;
+            height: 14px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            animation: fill-block 3.2s steps(1) infinite;
+        }
+
+        .print-progress span:nth-child(1) { animation-delay: 0s; }
+        .print-progress span:nth-child(2) { animation-delay: 0.2s; }
+        .print-progress span:nth-child(3) { animation-delay: 0.4s; }
+        .print-progress span:nth-child(4) { animation-delay: 0.6s; }
+        .print-progress span:nth-child(5) { animation-delay: 0.8s; }
+        .print-progress span:nth-child(6) { animation-delay: 1.0s; }
+        .print-progress span:nth-child(7) { animation-delay: 1.2s; }
+        .print-progress span:nth-child(8) { animation-delay: 1.4s; }
+        .print-progress span:nth-child(9) { animation-delay: 1.6s; }
+        .print-progress span:nth-child(10) { animation-delay: 1.8s; }
+
+        @keyframes fill-block {
+            0%   { background: var(--bg-card); border-color: var(--border-color); }
+            5%   { background: var(--pixel-cyan); border-color: var(--pixel-cyan); }
+            70%  { background: var(--pixel-cyan); border-color: var(--pixel-cyan); }
+            78%  { background: var(--bg-card); border-color: var(--border-color); }
+            100% { background: var(--bg-card); border-color: var(--border-color); }
         }
 
         .subtitle {
-            font-size: 1.15rem;
+            font-size: 1.4rem;
             color: var(--text-muted);
-            max-width: 600px;
+            max-width: 620px;
             margin: 0 auto;
             text-align: center;
         }
@@ -147,15 +226,17 @@
         }
 
         .section-title {
-            font-size: 1.875rem;
-            font-weight: 700;
+            font-size: 1.15rem;
             white-space: nowrap;
+            color: var(--pixel-cyan);
         }
 
         .section-line {
-            height: 1px;
-            background: var(--border-color);
+            height: 4px;
             flex-grow: 1;
+            background-image: linear-gradient(to right, var(--border-color) 60%, transparent 40%);
+            background-size: 10px 4px;
+            background-repeat: repeat-x;
         }
 
         /* --- CATALOGUE GRID --- */
@@ -167,17 +248,19 @@
 
         .product-card {
             background: var(--bg-card);
-            border-radius: 12px;
+            border-radius: 0;
             overflow: hidden;
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s ease, border-color 0.2s ease;
+            border: 3px solid var(--border-color);
+            box-shadow: 6px 6px 0 var(--pixel-shadow);
+            transition: transform 0.12s steps(2), border-color 0.12s steps(2), box-shadow 0.12s steps(2);
             display: flex;
             flex-direction: column;
         }
 
         .product-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent-blue);
+            transform: translate(-4px, -4px);
+            border-color: var(--pixel-cyan);
+            box-shadow: 10px 10px 0 var(--pixel-shadow);
         }
 
         .card-img-container {
@@ -185,20 +268,47 @@
             aspect-ratio: 1 / 1;
             overflow: hidden;
             background: #000;
+            border-bottom: 3px solid var(--border-color);
+        }
+
+        /* Pixel corner brackets over the product photo, like a game UI reticle */
+        .card-img-container::before,
+        .card-img-container::after {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-color: var(--pixel-cyan);
+            z-index: 4;
+            opacity: 0.85;
+            pointer-events: none;
+        }
+
+        .card-img-container::before {
+            top: 8px;
+            left: 8px;
+            border-top: 3px solid var(--pixel-cyan);
+            border-left: 3px solid var(--pixel-cyan);
+        }
+
+        .card-img-container::after {
+            bottom: 8px;
+            right: 8px;
+            border-bottom: 3px solid var(--pixel-cyan);
+            border-right: 3px solid var(--pixel-cyan);
         }
 
         .card-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.9;
+            opacity: 0.92;
             transition: opacity 0.3s ease, transform 0.5s ease;
             position: absolute;
             top: 0;
             left: 0;
         }
 
-        /* Support for second image on hover */
         .card-img.secondary {
             opacity: 0;
             transform: scale(1.05);
@@ -211,7 +321,7 @@
 
         .product-card:hover .card-img.primary {
             opacity: 1;
-            transform: scale(1.05); /* Subtle zoom for single images */
+            transform: scale(1.05);
         }
 
         .product-card:hover .card-img.secondary {
@@ -229,20 +339,24 @@
         }
 
         .card-info h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
             color: var(--text-main);
+            font-family: 'VT323', monospace;
+            font-size: 1.35rem;
+            letter-spacing: 0.01em;
         }
 
         .card-tag {
             display: inline-block;
-            font-size: 0.75rem;
-            text-transform: uppercase;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.55rem;
             letter-spacing: 0.05em;
-            color: var(--accent-blue);
-            margin-bottom: 0.5rem;
-            font-weight: 700;
+            color: var(--bg-void);
+            background: var(--pixel-lime);
+            padding: 4px 8px;
+            margin-bottom: 0.75rem;
+            box-shadow: 2px 2px 0 var(--pixel-shadow);
         }
 
         /* --- SERVICES SECTION --- */
@@ -256,82 +370,186 @@
         .service-card {
             background: var(--bg-card);
             padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
+            border-radius: 0;
+            border: 3px solid var(--border-color);
+            box-shadow: 6px 6px 0 var(--pixel-shadow);
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-void);
+            border: 3px solid var(--pixel-cyan);
+            box-shadow: 3px 3px 0 var(--pixel-shadow);
+            margin-bottom: 1.5rem;
         }
 
         .service-card i {
-            font-size: 2rem;
-            color: var(--accent-blue);
-            margin-bottom: 1.5rem;
+            font-size: 1.35rem;
+            color: var(--pixel-cyan);
         }
 
         .service-card h3 {
             margin-bottom: 1rem;
-            font-size: 1.25rem;
+            font-size: 1rem;
+            font-family: 'VT323', monospace;
+            font-size: 1.4rem;
         }
 
         .service-card p {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 1.15rem;
         }
 
         /* --- FOOTER --- */
         footer {
             padding: 4rem 0;
-            background: #020617;
-            border-top: 1px solid var(--border-color);
+            background: #06080f;
+            border-top: 3px dashed var(--border-color);
             text-align: center;
+        }
+
+        footer h2 {
+            font-size: 1.3rem;
+            color: var(--pixel-magenta);
         }
 
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 1rem;
+            gap: 1.25rem;
             margin-top: 2rem;
         }
 
         .social-btn {
             text-decoration: none;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            background: #1e293b;
-            border: 1px solid var(--border-color);
-            transition: all 0.2s ease;
+            color: var(--text-main);
+            padding: 0.85rem 1.5rem;
+            border-radius: 0;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            box-shadow: 5px 5px 0 var(--pixel-shadow);
+            transition: transform 0.1s steps(2), box-shadow 0.1s steps(2), background 0.1s steps(2);
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
 
         .social-btn:hover {
-            background: #334155;
-            border-color: var(--accent-blue);
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0 var(--pixel-shadow);
         }
 
-        .social-btn.whatsapp:hover { color: #25d366; }
-        .social-btn.instagram:hover { color: #e1306c; }
+        .social-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--pixel-shadow);
+        }
+
+        .social-btn.whatsapp:hover { border-color: #25d366; color: #25d366; }
+        .social-btn.instagram:hover { border-color: #e1306c; color: #e1306c; }
 
         .copyright {
             margin-top: 3rem;
             color: var(--text-muted);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-size: 1.05rem;
+            letter-spacing: 0.03em;
+        }
+
+        .copyright::after {
+            content: "_";
+            animation: blink-cursor 1s steps(1) infinite;
+            color: var(--pixel-lime);
+        }
+
+        @keyframes blink-cursor {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        /* --- FLOATING PIXEL SPRITES --- */
+        .pixel-sprites {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .pixel-sprite {
+            position: absolute;
+            image-rendering: pixelated;
+            opacity: 0.5;
+            filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.5));
+            animation: sprite-float 9s ease-in-out infinite;
+        }
+
+        .pixel-sprite.cube    { top: 14%; left: 6%;  width: 34px; animation-duration: 8s; }
+        .pixel-sprite.gear    { top: 62%; left: 88%; width: 40px; animation-duration: 11s; animation-delay: -3s; }
+        .pixel-sprite.nozzle  { top: 78%; left: 10%; width: 30px; animation-duration: 10s; animation-delay: -6s; }
+        .pixel-sprite.diamond { top: 22%; left: 92%; width: 26px; animation-duration: 7.5s; animation-delay: -1.5s; }
+
+        @keyframes sprite-float {
+            0%   { transform: translate(0, 0) rotate(0deg); }
+            25%  { transform: translate(10px, -14px) rotate(3deg); }
+            50%  { transform: translate(-6px, -22px) rotate(-3deg); }
+            75%  { transform: translate(-14px, -6px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pixel-sprite, .main-title, .print-progress span, .copyright::after {
+                animation: none !important;
+            }
         }
 
         /* --- MOBILE --- */
         @media (max-width: 768px) {
-            .main-title { font-size: 2.5rem; }
-            .subtitle { font-size: 1.1rem; }
+            .main-title { font-size: 1.4rem; }
+            .subtitle { font-size: 1.25rem; }
             .social-links { flex-direction: column; align-items: center; }
             .social-btn { width: 100%; max-width: 300px; justify-content: center; }
+            .pixel-sprite { display: none; }
         }
     </style>
 </head>
 <body>
     <canvas id="bg-canvas"></canvas>
+    <div class="scanlines"></div>
+
+    <!-- Floating pixel sprites tied to the 3D-printing subject -->
+    <div class="pixel-sprites" aria-hidden="true">
+        <svg class="pixel-sprite cube" viewBox="0 0 16 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="6" width="10" height="8" fill="#38bdf8"/>
+            <rect x="3" y="6" width="10" height="2" fill="#baff29"/>
+            <rect x="3" y="2" width="10" height="4" fill="#0b0e1a" stroke="#38bdf8" stroke-width="0.6"/>
+        </svg>
+        <svg class="pixel-sprite gear" viewBox="0 0 16 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="0" width="4" height="3" fill="#ff3fa4"/>
+            <rect x="6" y="13" width="4" height="3" fill="#ff3fa4"/>
+            <rect x="0" y="6" width="3" height="4" fill="#ff3fa4"/>
+            <rect x="13" y="6" width="3" height="4" fill="#ff3fa4"/>
+            <rect x="4" y="4" width="8" height="8" fill="#ff3fa4"/>
+            <rect x="6" y="6" width="4" height="4" fill="#0b0e1a"/>
+        </svg>
+        <svg class="pixel-sprite nozzle" viewBox="0 0 16 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="0" width="6" height="6" fill="#8a93b3"/>
+            <rect x="6" y="6" width="4" height="4" fill="#38bdf8"/>
+            <rect x="7" y="10" width="2" height="3" fill="#38bdf8"/>
+            <rect x="4" y="13" width="8" height="2" fill="#baff29"/>
+        </svg>
+        <svg class="pixel-sprite diamond" viewBox="0 0 16 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+            <rect x="7" y="2" width="2" height="2" fill="#baff29"/>
+            <rect x="5" y="4" width="6" height="2" fill="#baff29"/>
+            <rect x="3" y="6" width="10" height="2" fill="#baff29"/>
+            <rect x="5" y="8" width="6" height="2" fill="#baff29"/>
+            <rect x="7" y="10" width="2" height="2" fill="#baff29"/>
+        </svg>
+    </div>
 
     <!-- Interactive Eyes (Fixed at top-right) -->
     <div class="logo-eyes">
@@ -347,18 +565,22 @@
                 </div>
                 <h1 class="main-title">Layered Dreams</h1>
             </div>
+            <div class="print-progress" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
             <p class="subtitle">Precision 3D printing and custom design services. Bringing your digital concepts to life, layer by layer.</p>
         </div>
     </header>
 
     <main class="container">
-        
+
         <!-- Catalogue First -->
         <div class="section-header" data-aos="fade-right">
             <h2 class="section-title">Product Catalogue</h2>
             <div class="section-line"></div>
         </div>
-        
+
         <div class="catalogue-grid">
             <!-- Ghost of Yōtei -->
             <div class="product-card" data-aos="fade-up" data-aos-delay="100">
@@ -488,19 +710,19 @@
 
         <div class="services-grid">
             <div class="service-card" data-aos="fade-up">
-                <i class="fas fa-users"></i>
+                <div class="service-icon"><i class="fas fa-users"></i></div>
                 <h3>Personalized Figurines</h3>
                 <p>Custom "Funko-style" vinyl figures. We transform your photos into high-quality 3D printed caricatures with exceptional attention to detail.</p>
             </div>
 
             <div class="service-card" data-aos="fade-up" data-aos-delay="100">
-                <i class="fas fa-lightbulb"></i>
+                <div class="service-icon"><i class="fas fa-lightbulb"></i></div>
                 <h3>Lithophane Art</h3>
                 <p>3D printed textured panes that transform into stunning photographic images when back-lit. A unique way to preserve memories.</p>
             </div>
 
             <div class="service-card" data-aos="fade-up" data-aos-delay="200">
-                <i class="fas fa-cube"></i>
+                <div class="service-icon"><i class="fas fa-cube"></i></div>
                 <h3>Custom Parts & Prototyping</h3>
                 <p>On-demand printing starting at <strong>Rs 2.5 per gram</strong>. We use premium filaments like Galaxy3D and Numakers to ensure structural integrity and professional finish.</p>
             </div>
@@ -512,7 +734,7 @@
         <div class="container">
             <h2>Contact Us</h2>
             <p style="color: var(--text-muted); margin-top: 0.5rem;">Discuss your custom project with our team today.</p>
-            
+
             <div class="social-links">
                 <a href="https://wa.me/9544743432" target="_blank" class="social-btn whatsapp">
                     <i class="fab fa-whatsapp"></i> WhatsApp
@@ -521,7 +743,7 @@
                     <i class="fab fa-instagram"></i> Instagram
                 </a>
             </div>
-            
+
             <p class="copyright">© 2026 LAYERED DREAMS. Established for the future.</p>
         </div>
     </footer>
@@ -530,16 +752,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="./background.js"></script>
     <script>
-        AOS.init({ 
-            duration: 600, 
-            once: true, 
+        AOS.init({
+            duration: 600,
+            once: true,
             offset: 50,
             easing: 'ease-out-quad'
         });
 
         // Interactive Eyes Logic
         const pupils = document.querySelectorAll('.pupil');
-        
+
         function updateEyes(x, y) {
             pupils.forEach(pupil => {
                 const rect = pupil.parentElement.getBoundingClientRect();
@@ -547,16 +769,16 @@
                 const eyeY = rect.top + rect.height / 2;
                 const angle = Math.atan2(y - eyeY, x - eyeX);
                 const distance = Math.min(rect.width / 4, Math.hypot(x - eyeX, y - eyeY) / 10);
-                
+
                 const pupilX = Math.cos(angle) * distance;
                 const pupilY = Math.sin(angle) * distance;
-                
+
                 pupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
             });
         }
 
         window.addEventListener('mousemove', (e) => updateEyes(e.clientX, e.clientY));
-        
+
         window.addEventListener('touchstart', (e) => {
             if (e.touches.length > 0) {
                 updateEyes(e.touches[0].clientX, e.touches[0].clientY);
